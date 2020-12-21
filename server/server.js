@@ -2,7 +2,9 @@ const fs = require("fs");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+
 const connectDB = require("./config/db");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 // Routes
 //const authRoutes = require("./routes/auth");
@@ -24,6 +26,9 @@ app.use(cors());
 fs.readdirSync("./routes").map((r) =>
   app.use("/api", require("./routes/" + r))
 );
+
+app.use(notFound);
+app.use(errorHandler);
 
 // Listen
 const PORT = process.env.PORT || 8000;
