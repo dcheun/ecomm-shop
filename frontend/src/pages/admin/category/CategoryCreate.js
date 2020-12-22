@@ -43,7 +43,7 @@ const CategoryCreate = () => {
     setLoading(true);
 
     try {
-      const res = await createCategory(name, user.token);
+      const res = await createCategory({ name }, user.token);
       setLoading(false);
       setName("");
       toast.success(`Category "${res.data.name}" created`);

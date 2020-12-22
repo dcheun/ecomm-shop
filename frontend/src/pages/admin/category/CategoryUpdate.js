@@ -34,7 +34,7 @@ const CategoryUpdate = ({ history, match }) => {
     setLoading(true);
 
     try {
-      const res = await updateCategory(match.params.slug, name, user.token);
+      const res = await updateCategory(match.params.slug, { name }, user.token);
       setLoading(false);
       setName("");
       toast.success(`Category updated`);
