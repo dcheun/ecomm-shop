@@ -19,6 +19,7 @@ import CategoryCreate from "./pages/admin/category/CategoryCreate";
 import CategoryUpdate from "./pages/admin/category/CategoryUpdate";
 import SubcategoryCreate from "./pages/admin/subcategory/SubcategoryCreate";
 import SubcategoryUpdate from "./pages/admin/subcategory/SubcategoryUpdate";
+import ProductCreate from "./pages/admin/product/ProductCreate";
 import UserRoute from "./components/routes/UserRoute";
 import AdminRoute from "./components/routes/AdminRoute";
 import { currentUser } from "./utils/auth";
@@ -74,6 +75,7 @@ const App = () => {
           component={SubcategoryUpdate}
         />
         <AdminRoute path="/admin/subcategory" component={SubcategoryCreate} />
+        <AdminRoute path="/admin/product" component={ProductCreate} />
         <Route path="/" component={Home} exact />
       </Switch>
     </Router>

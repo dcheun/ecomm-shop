@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const Category = require("../models/category");
+const Subcategory = require("../models/subcategory");
 
 const create = asyncHandler(async (req, res) => {
   const { name } = req.body;
@@ -58,10 +59,17 @@ const remove = asyncHandler(async (req, res) => {
   }
 });
 
+const getSubs = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  const subcategories = await Subcategory.find({ parent: _id });
+  res.json(subcategories);
+});
+
 module.exports = {
   create,
   list,
   read,
   update,
   remove,
+  getSubs,
 };
