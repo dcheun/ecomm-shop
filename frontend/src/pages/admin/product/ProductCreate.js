@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { showLoading, hideLoading } from "react-redux-loading";
 
 import AdminNav from "../../../components/nav/AdminNav";
 import { createProduct } from "../../../utils/product";
 import ProductCreateForm from "../../../components/forms/ProductCreateForm";
 import { getCategories, getCategorySubs } from "../../../utils/category";
+import FileUpload from "../../../components/forms/FileUpload";
 
 const initialState = {
   title: "",
@@ -29,6 +31,7 @@ const ProductCreate = () => {
   const [subOptions, setSubOptions] = useState([]);
 
   const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     loadCategories();
@@ -51,7 +54,7 @@ const ProductCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(showLoading());
 
     try {
       clean(values);
@@ -64,7 +67,7 @@ const ProductCreate = () => {
       const { categories } = values;
       setValues({ ...initialState, categories });
       setSubOptions([]);
-      setLoading(false);
+      dispatch(hideLoading());
     }
   };
 
@@ -110,6 +113,10 @@ const ProductCreate = () => {
         <div className="col-md-10">
           <h4>Product Create</h4>
           <hr />
+
+          <div className="p-3">
+            <FileUpload values={values} setValues={setValues} />
+          </div>
 
           <ProductCreateForm
             handleSubmit={handleSubmit}
