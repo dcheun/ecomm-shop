@@ -3,7 +3,7 @@ import Resizer from "react-image-file-resizer";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Badge } from "antd";
-import { hideLoading, showLoading, LoadingBar } from "react-redux-loading";
+import { hideLoading, showLoading } from "react-redux-loading";
 
 const FileUpload = ({ values, setValues }) => {
   const user = useSelector((state) => state.user);
@@ -107,7 +107,7 @@ const FileUpload = ({ values, setValues }) => {
       </div>
       <div className="row">
         <label className="btn btn-primary">
-          Choose Files
+          Upload files
           <input
             type="file"
             multiple

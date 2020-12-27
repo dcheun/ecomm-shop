@@ -28,3 +28,4 @@ private
 package-lock.json
 .eslintcache
 
+frontend/public/images/

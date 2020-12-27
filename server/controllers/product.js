@@ -13,12 +13,50 @@ const create = asyncHandler(async (req, res) => {
   }
 });
 
-const list = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).sort({ createdAt: -1 });
+const read = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  const product = await Product.findOne({ slug })
+    .populate("category")
+    .populate("subcategory");
+  res.json(product);
+});
+
+const listAll = asyncHandler(async (req, res) => {
+  const { count } = req.params;
+
+  const products = await Product.find({})
+    .limit(parseInt(count))
+    .populate("category")
+    .populate("subcategory")
+    .sort([["createdAt", "desc"]]);
   res.json(products);
+});
+
+const update = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  req.body.slug = slugify(req.body.title);
+  const updated = await Product.findOneAndUpdate({ slug }, req.body, {
+    new: true,
+  });
+  if (updated) {
+    res.json(updated);
+  } else {
+    res.status(400);
+    throw new Error("Invalid product data");
+  }
+});
+
+const remove = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  const deleted = await Product.findOneAndDelete({ slug });
+  res.json(deleted);
 });
 
 module.exports = {
   create,
-  list,
+  listAll,
+  remove,
+  read,
+  update,
 };

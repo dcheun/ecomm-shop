@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 import { showLoading, hideLoading } from "react-redux-loading";
 
 import AdminNav from "../../../components/nav/AdminNav";
-import { createProduct } from "../../../utils/product";
-import ProductCreateForm from "../../../components/forms/ProductCreateForm";
+import { getProduct, updateProduct } from "../../../utils/product";
+import ProductUpdateForm from "../../../components/forms/ProductUpdateForm";
 import { getCategories, getCategorySubs } from "../../../utils/category";
 import FileUpload from "../../../components/forms/FileUpload";
 
@@ -25,16 +25,50 @@ const initialState = {
   brand: "",
 };
 
-const ProductCreate = () => {
+const ProductUpdate = ({ match, history }) => {
   const [values, setValues] = useState(initialState);
   const [subOptions, setSubOptions] = useState([]);
+  const [initialVals, setInitialVals] = useState(initialState);
+
+  const { slug } = match.params;
 
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     loadCategories();
+    loadProduct();
   }, []);
+
+  const loadProduct = async () => {
+    dispatch(showLoading());
+    try {
+      const res = await getProduct(slug);
+      console.log(res.data);
+      setValues((prev) => ({
+        ...prev,
+        ...res.data,
+        category: res.data.category?._id ?? "",
+        subcategory: res.data.subcategory.map((i) => i._id),
+      }));
+      console.log(values);
+      setInitialVals((prev) => ({
+        ...prev,
+        ...res.data,
+        category: res.data.category?._id ?? "",
+        subcategory: res.data.subcategory.map((i) => i._id),
+      }));
+      console.log("initialVals=", initialVals);
+      if (res.data.category?._id) {
+        const subs = await getCategorySubs(res.data.category._id);
+        setSubOptions(subs.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(hideLoading());
+    }
+  };
 
   const loadCategories = async () => {
     try {
@@ -57,17 +91,18 @@ const ProductCreate = () => {
 
     try {
       clean(values);
-      const res = await createProduct(values, user.token);
-      toast.success(`Product "${res.data.title}" created`);
+      const res = await updateProduct(slug, values, user.token);
+      toast.success(`Product "${res.data.title}" updated`);
     } catch (error) {
       console.log(error);
-      toast.error("Create product failed");
+      toast.error("Update product failed");
     } finally {
       const { categories } = values;
       setValues({ ...initialState, categories });
       setSubOptions([]);
       dispatch(hideLoading());
     }
+    history.push("/admin/products");
   };
 
   const handleChange = (e) => {
@@ -82,13 +117,6 @@ const ProductCreate = () => {
   const handleCategoryChange = async (e) => {
     const { value } = e.target;
 
-    setValues((prev) => ({
-      ...prev,
-      category: value,
-      // Clears the selected subcategories if top category changes.
-      subcategory: [],
-    }));
-
     if (!value) {
       setSubOptions([]);
       return;
@@ -101,6 +129,15 @@ const ProductCreate = () => {
       console.log(error);
       toast.error("Error retrieving subcategories");
     }
+
+    setValues((prev) => ({
+      ...prev,
+      category: value,
+      // Clears the selected subcategories if top category changes.
+      // Set it back to original if user clicks back to it.
+      subcategory:
+        value === initialVals.category ? initialVals.subcategory : [],
+    }));
   };
 
   return (
@@ -110,14 +147,14 @@ const ProductCreate = () => {
           <AdminNav />
         </div>
         <div className="col-md-10">
-          <h4>Product Create</h4>
+          <h4>Product Update</h4>
           <hr />
 
           <div className="p-3">
             <FileUpload values={values} setValues={setValues} />
           </div>
 
-          <ProductCreateForm
+          <ProductUpdateForm
             handleSubmit={handleSubmit}
             handleChange={handleChange}
             handleCategoryChange={handleCategoryChange}
@@ -131,4 +168,4 @@ const ProductCreate = () => {
   );
 };
 
-export default ProductCreate;
+export default ProductUpdate;
