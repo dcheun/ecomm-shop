@@ -4,14 +4,17 @@ import { Link } from "react-router-dom";
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import StarRatings from "react-star-ratings";
 
 import sample from "../../images/sample.jpg";
 import ProductListItems from "./ProductListItems";
+import RatingModal from "../modals/RatingModal";
+import { showAverage } from "../../utils/rating";
 
 const { TabPane } = Tabs;
 
-const SingleProduct = ({ product }) => {
-  const { title, description, images, slug } = product;
+const SingleProduct = ({ product, onStarClick, star }) => {
+  const { _id, title, description, images, slug, ratings } = product;
 
   return (
     <>
@@ -23,7 +26,6 @@ const SingleProduct = ({ product }) => {
         ) : (
           <Card cover={<img src={sample} className="mb-3 card-image" />}></Card>
         )}
-
         <Tabs type="card">
           <TabPane tab="Description" key="1">
             {description}
@@ -36,6 +38,13 @@ const SingleProduct = ({ product }) => {
 
       <div className="col-md-5">
         <h1 className="bg-info p-3">{title}</h1>
+
+        {ratings?.length ?? 0 > 0 ? (
+          showAverage(product)
+        ) : (
+          <div className="text-center pt-1 pb-3">No ratings yet</div>
+        )}
+
         <Card
           actions={[
             <>
@@ -48,6 +57,16 @@ const SingleProduct = ({ product }) => {
               <br />
               Add to Wishlist
             </Link>,
+            <RatingModal>
+              <StarRatings
+                name={_id}
+                numberOfStars={5}
+                rating={star}
+                changeRating={onStarClick}
+                isSelectable
+                starRatedColor="red"
+              />
+            </RatingModal>,
           ]}
         >
           <ProductListItems product={product} />

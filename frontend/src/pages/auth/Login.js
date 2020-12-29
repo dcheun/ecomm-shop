@@ -9,7 +9,11 @@ import { Link } from "react-router-dom";
 import { createOrUpdateUser } from "../../utils/auth";
 
 const roleBasedRedirect = (res, history) => {
-  if (res.data.role === "admin") {
+  // Check if intended
+  const intended = history.location.state;
+  if (intended) {
+    history.push(intended.from);
+  } else if (res.data.role === "admin") {
     history.push("/admin/dashboard");
   } else {
     history.push("/user/history");
@@ -25,6 +29,9 @@ const Login = ({ history }) => {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
+    const intended = history.location.state;
+    if (intended) return;
+
     if (user && user.token) {
       history.push("/");
     }
