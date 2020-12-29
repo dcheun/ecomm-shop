@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/product");
 const slugify = require("slugify");
+const User = require("../models/user");
 
 const create = asyncHandler(async (req, res) => {
   req.body.slug = slugify(req.body.title);
@@ -85,6 +86,72 @@ const productsCount = asyncHandler(async (req, res) => {
   res.json(total);
 });
 
+const productStar = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { star } = req.body;
+
+  const product = await Product.findById(productId);
+  const user = await User.findOne({ email: req.user.email });
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  // Who is updating?
+  // Check if currently logged in user have already added rating to this product.
+  // NOTE: convert check toString because object types doesn't match.
+  const existingRatingObject = product.ratings.find(
+    (i) => i.postedBy.toString() === user._id.toString()
+  );
+
+  // if user haven't left rating yet, push it
+  if (existingRatingObject === undefined) {
+    const ratingAdded = await Product.findByIdAndUpdate(
+      product._id,
+      {
+        $push: { ratings: { star, postedBy: user._id } },
+      },
+      { new: true }
+    );
+    console.log("ratingAdded", ratingAdded);
+    res.json(ratingAdded);
+  } else {
+    // if user have already left rating, update it
+    const ratingUpdated = await Product.updateOne(
+      { ratings: { $elemMatch: existingRatingObject } },
+      { $set: { "ratings.$.star": star } },
+      { new: true }
+    );
+    console.log("ratingUpdated", ratingUpdated);
+    res.json(ratingUpdated);
+  }
+});
+
+const listRelated = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const product = await Product.findById(productId);
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  const related = await Product.find({
+    _id: { $ne: product._id },
+    category: product.category,
+  })
+    .limit(3)
+    .populate("category")
+    .populate("subcategory")
+    .populate("postedBy");
+
+  res.json(related);
+});
+
 module.exports = {
   create,
   listAll,
@@ -93,4 +160,6 @@ module.exports = {
   update,
   list,
   productsCount,
+  productStar,
+  listRelated,
 };
