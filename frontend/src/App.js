@@ -24,6 +24,8 @@ import ProductCreate from "./pages/admin/product/ProductCreate";
 import ProductUpdate from "./pages/admin/product/ProductUpdate";
 import Product from "./pages/Product";
 import AllProducts from "./pages/admin/product/AllProducts";
+import CategoryHome from "./pages/category/CategoryHome";
+import SubcategoryHome from "./pages/subcategory/SubcategoryHome";
 import UserRoute from "./components/routes/UserRoute";
 import AdminRoute from "./components/routes/AdminRoute";
 import { currentUser } from "./utils/auth";
@@ -84,6 +86,8 @@ const App = () => {
         <AdminRoute path="/admin/product/:slug" component={ProductUpdate} />
         <AdminRoute path="/admin/product" component={ProductCreate} />
         <Route path="/product/:slug" component={Product} />
+        <Route path="/category/:slug" component={CategoryHome} />
+        <Route path="/subcategory/:slug" component={SubcategoryHome} />
         <Route path="/" component={Home} exact />
       </Switch>
     </Router>

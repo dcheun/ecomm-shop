@@ -27,7 +27,7 @@ const SubcategoryUpdate = ({ history, match, location }) => {
       let res = await getCategories();
       setCategories(res.data);
       res = await getSubcategory(match.params.slug, parent);
-      const sc = res.data[0];
+      const sc = res.data.subcategories[0];
       setName(sc.name);
       setCategory(sc.parent);
       setLoading(false);

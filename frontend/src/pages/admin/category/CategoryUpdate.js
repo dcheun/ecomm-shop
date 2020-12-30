@@ -19,8 +19,8 @@ const CategoryUpdate = ({ history, match }) => {
   const loadCategory = async () => {
     setLoading(true);
     try {
-      const res = await getCategory(match.params.slug);
-      setName(res.data.name);
+      const { data } = await getCategory(match.params.slug);
+      setName(data.category.name);
       setLoading(false);
     } catch (error) {
       console.log(error);

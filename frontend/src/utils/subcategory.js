@@ -4,10 +4,11 @@ export const getSubcategories = async () => {
   return await axios.get(`${process.env.REACT_APP_API}/subcategories`);
 };
 
-export const getSubcategory = async (slug, parent) => {
+export const getSubcategory = async (slug, parent, includes = []) => {
   const qs = `?parent=${parent}`;
+  const qsInclude = includes.map((i) => `&include=${i}`).join();
   return await axios.get(
-    `${process.env.REACT_APP_API}/subcategory/${slug}${qs}`
+    `${process.env.REACT_APP_API}/subcategory/${slug}${qs}${qsInclude}`
   );
 };
 
