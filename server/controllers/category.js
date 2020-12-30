@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const Category = require("../models/category");
 const Subcategory = require("../models/subcategory");
+const Product = require("../models/product");
 
 const create = asyncHandler(async (req, res) => {
   const { name } = req.body;
@@ -21,12 +22,17 @@ const list = asyncHandler(async (req, res) => {
 
 const read = asyncHandler(async (req, res) => {
   const category = await Category.findOne({ slug: req.params.slug });
-  if (category) {
-    res.json(category);
-  } else {
+  if (!category) {
     res.status(404);
     throw new Error("Category not found");
   }
+
+  const products = await Product.find({ category }).populate("category");
+
+  res.json({
+    category,
+    products,
+  });
 });
 
 const update = asyncHandler(async (req, res) => {
