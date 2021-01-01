@@ -152,6 +152,149 @@ const listRelated = asyncHandler(async (req, res) => {
   res.json(related);
 });
 
+// Search / Filter
+
+// NOTE: text based search (enabled by text: true in Schema)
+const handleQuery = asyncHandler(async (req, res, query) => {
+  const products = await Product.find({ $text: { $search: query } })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handlePrice = asyncHandler(async (req, res, price) => {
+  const products = await Product.find({
+    price: { $gte: price[0], $lte: price[1] },
+  })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleCategory = asyncHandler(async (req, res, category) => {
+  const products = await Product.find({ category })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleStars = asyncHandler(async (req, res, stars) => {
+  const aggregates = await Product.aggregate([
+    {
+      $project: {
+        document: "$$ROOT", // Includes all fields of the document.
+        // title: "$title", // <-- so we don't need to write it all out like so.
+        floorAverage: {
+          $floor: { $avg: "$ratings.star" }, // Eg: 3.33 -> 3
+        },
+      },
+    },
+    {
+      $match: { floorAverage: stars },
+    },
+  ]);
+  // console.log("aggregates=", aggregates);
+  const products = await Product.find({ _id: aggregates })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleSubcategory = asyncHandler(async (req, res, subcategory) => {
+  const products = await Product.find({ subcategory })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleShipping = asyncHandler(async (req, res, shipping) => {
+  const products = await Product.find({ shipping })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleColor = asyncHandler(async (req, res, color) => {
+  const products = await Product.find({ color })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const handleBrand = asyncHandler(async (req, res, brand) => {
+  const products = await Product.find({ brand })
+    .populate("category", "_id name")
+    .populate("subcategory", "_id name")
+    .populate("postedBy", "_id name");
+
+  res.json(products);
+});
+
+const searchFilters = asyncHandler(async (req, res) => {
+  const {
+    query,
+    price,
+    category,
+    stars,
+    subcategory,
+    shipping,
+    color,
+    brand,
+  } = req.body;
+  console.log("query=", query);
+  console.log("price=", price);
+  console.log("category=", category);
+  console.log("stars=", stars);
+  console.log("subcategory=", subcategory);
+  console.log("shipping=", shipping);
+  console.log("color=", color);
+  console.log("brand=", brand);
+
+  if (query) {
+    await handleQuery(req, res, query);
+  }
+
+  // Price is an array range, eg: [10, 100]
+  if (price !== undefined) {
+    await handlePrice(req, res, price);
+  }
+
+  if (category !== undefined) {
+    await handleCategory(req, res, category);
+  }
+
+  if (stars) {
+    await handleStars(req, res, stars);
+  }
+
+  if (subcategory) {
+    await handleSubcategory(req, res, subcategory);
+  }
+  if (shipping) {
+    await handleShipping(req, res, shipping);
+  }
+  if (color) {
+    await handleColor(req, res, color);
+  }
+  if (brand) {
+    await handleBrand(req, res, brand);
+  }
+});
+
 module.exports = {
   create,
   listAll,
@@ -162,4 +305,5 @@ module.exports = {
   productsCount,
   productStar,
   listRelated,
+  searchFilters,
 };

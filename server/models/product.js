@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const { ObjectId } = mongoose.Schema.Types;
 
+// NOTE: text: true => allows us to perform search query based on text.
 const productSchema = mongoose.Schema(
   {
     title: {
@@ -9,7 +10,7 @@ const productSchema = mongoose.Schema(
       trim: true,
       required: true,
       maxlength: 32,
-      text: true,
+      // text: true,
     },
     slug: {
       type: String,
@@ -21,10 +22,10 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
       maxlength: 2000,
-      text: true,
+      // text: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
       maxlength: 32,
       trim: true,
@@ -70,6 +71,8 @@ const productSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.index({ title: "text", description: "text" });
 
 const Product = mongoose.model("Product", productSchema);
 
