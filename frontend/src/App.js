@@ -23,6 +23,7 @@ import SubcategoryUpdate from "./pages/admin/subcategory/SubcategoryUpdate";
 import ProductCreate from "./pages/admin/product/ProductCreate";
 import ProductUpdate from "./pages/admin/product/ProductUpdate";
 import Product from "./pages/Product";
+import Shop from "./pages/Shop";
 import AllProducts from "./pages/admin/product/AllProducts";
 import CategoryHome from "./pages/category/CategoryHome";
 import SubcategoryHome from "./pages/subcategory/SubcategoryHome";
@@ -88,6 +89,7 @@ const App = () => {
         <Route path="/product/:slug" component={Product} />
         <Route path="/category/:slug" component={CategoryHome} />
         <Route path="/subcategory/:slug" component={SubcategoryHome} />
+        <Route path="/shop" component={Shop} />
         <Route path="/" component={Home} exact />
       </Switch>
     </Router>
