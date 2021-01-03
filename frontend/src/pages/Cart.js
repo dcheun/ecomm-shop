@@ -1,10 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { showLoading, hideLoading } from "react-redux-loading";
+import { toast } from "react-toastify";
 
 import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
+import { userCart } from "../utils/user";
 
-const Cart = () => {
+const Cart = ({ history }) => {
   const { user, cart } = useSelector((state) => state);
   const dispatch = useDispatch();
 
@@ -14,7 +17,22 @@ const Cart = () => {
     }, 0);
   };
 
-  const saveOrderToDb = () => {};
+  const saveOrderToDb = async () => {
+    dispatch(showLoading());
+    try {
+      const res = await userCart(cart, user.token);
+      console.log("Cart Post Res=", res);
+      if (res.data.ok) {
+        history.push("/checkout");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error saving order");
+    } finally {
+      dispatch(hideLoading());
+    }
+    history.push("/checkout");
+  };
 
   const showCartItems = () => {
     return (

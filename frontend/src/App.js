@@ -25,6 +25,7 @@ import ProductUpdate from "./pages/admin/product/ProductUpdate";
 import Product from "./pages/Product";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import AllProducts from "./pages/admin/product/AllProducts";
 import CategoryHome from "./pages/category/CategoryHome";
 import SubcategoryHome from "./pages/subcategory/SubcategoryHome";
@@ -94,6 +95,7 @@ const App = () => {
         <Route path="/subcategory/:slug" component={SubcategoryHome} />
         <Route path="/shop" component={Shop} />
         <Route path="/cart" component={Cart} />
+        <UserRoute path="/checkout" component={Checkout} />
         <Route path="/" component={Home} exact />
       </Switch>
     </Router>
