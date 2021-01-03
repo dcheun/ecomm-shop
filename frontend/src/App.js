@@ -24,11 +24,13 @@ import ProductCreate from "./pages/admin/product/ProductCreate";
 import ProductUpdate from "./pages/admin/product/ProductUpdate";
 import Product from "./pages/Product";
 import Shop from "./pages/Shop";
+import Cart from "./pages/Cart";
 import AllProducts from "./pages/admin/product/AllProducts";
 import CategoryHome from "./pages/category/CategoryHome";
 import SubcategoryHome from "./pages/subcategory/SubcategoryHome";
 import UserRoute from "./components/routes/UserRoute";
 import AdminRoute from "./components/routes/AdminRoute";
+import SideDrawer from "./components/drawer/SideDrawer";
 import { currentUser } from "./utils/auth";
 
 const App = () => {
@@ -66,6 +68,7 @@ const App = () => {
     <Router>
       <LoadingBar />
       <Header />
+      <SideDrawer />
       <ToastContainer />
       <Switch>
         <Route path="/login" component={Login} />
@@ -90,6 +93,7 @@ const App = () => {
         <Route path="/category/:slug" component={CategoryHome} />
         <Route path="/subcategory/:slug" component={SubcategoryHome} />
         <Route path="/shop" component={Shop} />
+        <Route path="/cart" component={Cart} />
         <Route path="/" component={Home} exact />
       </Switch>
     </Router>

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { Menu } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import firebase from "firebase/app";
+import { Menu, Badge } from "antd";
 import {
   AppstoreOutlined,
   SettingOutlined,
@@ -7,10 +10,9 @@ import {
   UserAddOutlined,
   LogoutOutlined,
   ShoppingOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
-import { Link, useHistory } from "react-router-dom";
-import firebase from "firebase/app";
-import { useDispatch, useSelector } from "react-redux";
+
 import Search from "../../components/forms/Search";
 
 const { SubMenu, Item } = Menu;
@@ -19,7 +21,7 @@ const Header = () => {
   const [current, setCurrent] = useState("home");
 
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const { user, cart } = useSelector((state) => state);
   const history = useHistory();
 
   const handleClick = (e) => {
@@ -43,6 +45,14 @@ const Header = () => {
 
       <Item key="shop" icon={<ShoppingOutlined />}>
         <Link to="/shop">Shop</Link>
+      </Item>
+
+      <Item key="cart" icon={<ShoppingCartOutlined />}>
+        <Link to="/cart">
+          <Badge count={cart.length} offset={[9, 0]}>
+            Cart
+          </Badge>
+        </Link>
       </Item>
 
       {!user ? (

@@ -8,18 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { createOrUpdateUser } from "../../utils/auth";
 
-const roleBasedRedirect = (res, history) => {
-  // Check if intended
-  const intended = history.location.state;
-  if (intended) {
-    history.push(intended.from);
-  } else if (res.data.role === "admin") {
-    history.push("/admin/dashboard");
-  } else {
-    history.push("/user/history");
-  }
-};
-
 const Login = ({ history }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +24,18 @@ const Login = ({ history }) => {
       history.push("/");
     }
   }, [user, history]);
+
+  const roleBasedRedirect = (res, history) => {
+    // Check if intended
+    const intended = history.location.state;
+    if (intended) {
+      history.push(intended.from);
+    } else if (res.data.role === "admin") {
+      history.push("/admin/dashboard");
+    } else {
+      history.push("/user/history");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
