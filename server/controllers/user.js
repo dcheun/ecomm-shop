@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const Product = require("../models/product");
 const Cart = require("../models/cart");
+const Coupon = require("../models/coupon");
 
 const userCart = asyncHandler(async (req, res) => {
   const { cart } = req.body;
@@ -57,6 +58,11 @@ const getUserCart = asyncHandler(async (req, res) => {
     "_id title price totalAfterDiscount"
   );
 
+  if (!cart) {
+    res.status(400);
+    throw new Error("No cart found");
+  }
+
   const { products, cartTotal, totalAfterDiscount } = cart;
   res.json({ products, cartTotal, totalAfterDiscount });
 });
@@ -79,9 +85,41 @@ const saveAddress = asyncHandler(async (req, res) => {
   res.json({ ok: true });
 });
 
+const applyCouponToUserCart = asyncHandler(async (req, res) => {
+  const { coupon } = req.body;
+
+  const validCoupon = await Coupon.findOne({ name: coupon });
+  if (validCoupon === null) {
+    res.status(400);
+    throw new Error("Invalid coupon");
+  }
+
+  const user = await User.findOne({ email: req.user.email });
+  const { products, cartTotal } = await Cart.findOne({
+    orderedBy: user._id,
+  }).populate("products.product", "_id title price");
+
+  console.log("cartTotal", cartTotal, "discount%", validCoupon.discount);
+
+  // Calculate the total after discount
+  const totalAfterDiscount = (
+    cartTotal -
+    (cartTotal * validCoupon.discount) / 100
+  ).toFixed(2);
+
+  await Cart.findOneAndUpdate(
+    { orderedBy: user._id },
+    { totalAfterDiscount },
+    { new: true }
+  );
+
+  res.json({ totalAfterDiscount });
+});
+
 module.exports = {
   userCart,
   getUserCart,
   emptyCart,
   saveAddress,
+  applyCouponToUserCart,
 };
