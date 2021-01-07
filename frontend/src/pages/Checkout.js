@@ -61,7 +61,7 @@ const Checkout = ({ history }) => {
 
   const handleEmptyCart = async () => {
     // remove from local storage
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
       localStorage.removeItem("cart");
     }
     // remove from redux

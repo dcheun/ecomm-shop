@@ -17,7 +17,7 @@ const ProductCardInCheckout = ({ p }) => {
 
   const handleColorChange = (e) => {
     let cart = [];
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
       if (localStorage.getItem("cart")) {
         cart = JSON.parse(localStorage.getItem("cart"));
       }
@@ -43,7 +43,7 @@ const ProductCardInCheckout = ({ p }) => {
     }
 
     let cart = [];
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
       if (localStorage.getItem("cart")) {
         cart = JSON.parse(localStorage.getItem("cart"));
       }
@@ -62,7 +62,7 @@ const ProductCardInCheckout = ({ p }) => {
 
   const handleRemove = () => {
     let cart = [];
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
       if (localStorage.getItem("cart")) {
         cart = JSON.parse(localStorage.getItem("cart"));
       }

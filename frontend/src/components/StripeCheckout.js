@@ -8,6 +8,7 @@ import { DollarOutlined, CheckOutlined } from "@ant-design/icons";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 import { createPaymentIntent } from "../utils/stripe";
+import { createOrder, emptyUserCart } from "../utils/user";
 import sample from "../images/sample.jpg";
 
 const StripeCheckout = ({ history }) => {
@@ -67,6 +68,27 @@ const StripeCheckout = ({ history }) => {
       } else {
         // Get result after successful payment.
         // Create order and save in db for admin to process.
+        const res = await createOrder(user.token, payload);
+        if (res.data.ok) {
+          // Empty cart from local storage.
+          // NOTE: typeof returns a string
+          // https://stackoverflow.com/questions/5663277/what-is-the-difference-between-undefined-and-undefined
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("cart");
+          }
+          // Empty cart from redux.
+          dispatch({
+            type: "ADD_TO_CART",
+            payload: [],
+          });
+          // Reset coupon to false.
+          dispatch({
+            type: "COUPON_APPLIED",
+            payload: false,
+          });
+          // Empty cart from database.
+          const { data } = await emptyUserCart(user.token);
+        }
         // Empty user cart from redux store and local storage.
         console.log(JSON.stringify(payload, null, 4));
         setError(null);

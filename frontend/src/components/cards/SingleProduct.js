@@ -25,7 +25,9 @@ const SingleProduct = ({ product, onStarClick, star }) => {
   const handleAddToCart = () => {
     // create cart array
     let cart = [];
-    if (typeof window !== undefined) {
+    // NOTE: typeof returns a string
+    // https://stackoverflow.com/questions/5663277/what-is-the-difference-between-undefined-and-undefined
+    if (typeof window !== "undefined") {
       // If cart is in localstorage, GET it
       if (localStorage.getItem("cart")) {
         cart = JSON.parse(localStorage.getItem("cart"));

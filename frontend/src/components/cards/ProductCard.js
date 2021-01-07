@@ -20,7 +20,7 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = () => {
     // create cart array
     let cart = [];
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
       // If cart is in localstorage, GET it
       if (localStorage.getItem("cart")) {
         cart = JSON.parse(localStorage.getItem("cart"));
@@ -73,10 +73,10 @@ const ProductCard = ({ product }) => {
             View Product
           </Link>,
           <Tooltip title={tooltip}>
-            <a onClick={handleAddToCart}>
+            <a onClick={handleAddToCart} disabled={product.quantity < 1}>
               <ShoppingCartOutlined className="text-danger" />
               <br />
-              Add to Cart
+              {product.quantity < 1 ? "Out of stock" : "Add to cart"}
             </a>
           </Tooltip>,
         ]}
