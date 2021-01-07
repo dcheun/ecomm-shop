@@ -146,6 +146,16 @@ const createOrder = asyncHandler(async (req, res) => {
   res.json({ ok: true });
 });
 
+const orders = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ email: req.user.email });
+
+  const orders = await Order.find({ orderedBy: user._id }).populate(
+    "products.product"
+  );
+
+  res.json(orders);
+});
+
 module.exports = {
   userCart,
   getUserCart,
@@ -153,4 +163,5 @@ module.exports = {
   saveAddress,
   applyCouponToUserCart,
   createOrder,
+  orders,
 };
