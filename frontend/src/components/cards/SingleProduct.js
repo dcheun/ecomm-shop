@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { showLoading, hideLoading } from "react-redux-loading";
 import { Card, Tabs, Tooltip } from "antd";
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import StarRatings from "react-star-ratings";
 import _ from "lodash";
+import { toast } from "react-toastify";
 
 import sample from "../../images/sample.jpg";
 import ProductListItems from "./ProductListItems";
 import RatingModal from "../modals/RatingModal";
 import { showAverage } from "../../utils/rating";
+import { addToWishlist } from "../../utils/user";
 
 const { TabPane } = Tabs;
 
@@ -21,6 +24,7 @@ const SingleProduct = ({ product, onStarClick, star }) => {
 
   const { user, cart } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleAddToCart = () => {
     // create cart array
@@ -54,6 +58,22 @@ const SingleProduct = ({ product, onStarClick, star }) => {
         type: "SET_VISIBLE",
         payload: true,
       });
+    }
+  };
+
+  const handleAddToWishlist = async (e) => {
+    dispatch(showLoading());
+    try {
+      const { data } = await addToWishlist(user.token, product._id);
+      if (data.ok) {
+        toast.success("Added to wishlist");
+        history.push("/user/wishlist");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error adding to wishlist");
+    } finally {
+      dispatch(hideLoading());
     }
   };
 
@@ -95,11 +115,11 @@ const SingleProduct = ({ product, onStarClick, star }) => {
                 Add to Cart
               </a>
             </Tooltip>,
-            <Link to={`/product/${slug}`}>
+            <a onClick={handleAddToWishlist}>
               <HeartOutlined className="text-info" />
               <br />
               Add to Wishlist
-            </Link>,
+            </a>,
             <RatingModal>
               <StarRatings
                 name={_id}
