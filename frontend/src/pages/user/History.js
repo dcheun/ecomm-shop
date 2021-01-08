@@ -3,10 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "react-redux-loading";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  PDFDownloadLink,
+  PDFViewer,
+} from "@react-pdf/renderer";
 
 import UserNav from "../../components/nav/UserNav";
 import { getUserOrders } from "../../utils/user";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
+import Invoice from "../../components/order/Invoice";
 
 const History = () => {
   const [orders, setOrders] = useState([]);
@@ -68,15 +78,25 @@ const History = () => {
     );
   };
 
+  const showDownloadLink = (order) => {
+    return (
+      <PDFDownloadLink
+        document={<Invoice order={order} />}
+        fileName="invoice.pdf"
+        className="btn btn-sm btn-block btn-outline-primary"
+      >
+        Download PDF
+      </PDFDownloadLink>
+    );
+  };
+
   const showEachOrders = () => {
     return orders.map((order, i) => (
       <div key={i} className="m-5 p-3 card">
         <ShowPaymentInfo order={order} />
         {showOrderInTable(order)}
         <div className="row">
-          <div className="col">
-            <p>PDF download</p>
-          </div>
+          <div className="col">{showDownloadLink(order)}</div>
         </div>
       </div>
     ));
@@ -90,7 +110,7 @@ const History = () => {
         </div>
         <div className="col text-center">
           <h4>
-            {orders.length > 0 ? "User purcahse orders" : "No purchase orders"}
+            {orders.length > 0 ? "User purchase orders" : "No purchase orders"}
           </h4>
           {showEachOrders()}
         </div>
