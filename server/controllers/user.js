@@ -156,6 +156,35 @@ const orders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+const addToWishlist = asyncHandler(async (req, res) => {
+  const { productId } = req.body;
+
+  // NOTE: $addToSet prevent dups.
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $addToSet: { wishlist: productId } }
+  );
+
+  res.json({ ok: true });
+});
+
+const wishlist = asyncHandler(async (req, res) => {
+  const list = await User.findOne({ email: req.user.email })
+    .select("wishlist")
+    .populate("wishlist");
+
+  res.json(list);
+});
+
+const removeFromWishlist = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $pull: { wishlist: productId } }
+  );
+  res.json({ ok: true });
+});
+
 module.exports = {
   userCart,
   getUserCart,
@@ -164,4 +193,7 @@ module.exports = {
   applyCouponToUserCart,
   createOrder,
   orders,
+  addToWishlist,
+  wishlist,
+  removeFromWishlist,
 };
